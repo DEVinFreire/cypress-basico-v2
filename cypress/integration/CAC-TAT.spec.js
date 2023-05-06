@@ -1,6 +1,7 @@
 ///<reference types="Cypress"/>
 
 describe("Central de Atendimento ao Cliente TAT", function () {
+  const THREE_SECONDS_IN_MS = 3000;
   beforeEach(function () {
     cy.visit("./src/index.html");
   });
@@ -11,21 +12,29 @@ describe("Central de Atendimento ao Cliente TAT", function () {
   it("preenche os campos obrigatórios e envia o formulário", function () {
     const longTest =
       "texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo, texto longo.";
+
+    cy.clock();
+
     cy.get("#firstName").type("Nilton");
     cy.get("#lastName").type("Freire");
     cy.get("#email").type("nilton.freire@joyjet.com");
     cy.get("#open-text-area").type(longTest, { delay: 0 });
     cy.contains("button", "Enviar").click();
     cy.get(".success").should("be.visible");
+    cy.tick(THREE_SECONDS_IN_MS);
+    cy.get(".success").should("not.be.visible");
   });
 
   it("exibe mensagem de erro ao submeter o formulário com um email com formatação inválida", function () {
+    cy.clock();
     cy.get("#firstName").type("Nilton");
     cy.get("#lastName").type("Nilton");
     cy.get("#email").type("nilton.freire@joyjet,com");
     cy.get("#open-text-area").type("test");
     cy.contains("button", "Enviar").click();
     cy.get(".error").should("be.visible");
+    cy.tick(THREE_SECONDS_IN_MS);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("campo telefone continua vazio quando preenchido com valor não-numérico", function () {
@@ -33,6 +42,7 @@ describe("Central de Atendimento ao Cliente TAT", function () {
   });
 
   it("exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário", function () {
+    cy.clock();
     cy.get("#firstName").type("Nilton");
     cy.get("#lastName").type("Nilton");
     cy.get("#email").type("nilton.freire@joyjet.com");
@@ -40,6 +50,8 @@ describe("Central de Atendimento ao Cliente TAT", function () {
     cy.get("#open-text-area").type("test");
     cy.contains("button", "Enviar").click();
     cy.get(".error").should("be.visible");
+    cy.tick(THREE_SECONDS_IN_MS);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("preenche e limpa os campos nome, sobrenome, email e telefone", function () {
@@ -66,13 +78,19 @@ describe("Central de Atendimento ao Cliente TAT", function () {
   });
 
   it("exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios", function () {
+    cy.clock();
     cy.contains("button", "Enviar").click();
     cy.get(".error").should("be.visible");
+    cy.tick(THREE_SECONDS_IN_MS);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("Envia formulario com sucesso criando comandos customizados", function () {
+    cy.clock();
     cy.fillMandatoryFieldsAndSubmit();
     cy.get(".success").should("be.visible");
+    cy.tick(THREE_SECONDS_IN_MS);
+    cy.get(".error").should("not.be.visible");
   });
 
   it("Seleciona um produto (youtube) pelo texto ", function () {
